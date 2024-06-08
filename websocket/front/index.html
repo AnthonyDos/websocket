@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="./styles.css">
+        <title>Document</title>
+        <style>
+            table {
+                border-collapse: collapse;
+            }
+
+            table,
+            th,
+            td {
+                border: 1px solid black;
+            }
+
+            td {
+                width: 50px;
+                height: 50px;
+            }
+
+            .R {
+                background-color: red;
+            }
+
+            .Y {
+                background-color: yellow;
+            }
+        </style>
+    </head>
+
+    <body>
+        <header class="main-header"></header>
+        <div class="card-container">
+            <div class="card" data-room="room1">
+                <h2>Salon 1</h2>
+                <p>Description du Salon 1</p>
+            </div>
+            <div class="card" data-room="room2">
+                <h2>Salon 2</h2>
+                <p>Description du Salon 2</p>
+            </div>
+            <div class="card" data-room="room3">
+                <h2>Salon 3</h2>
+                <p>Description du Salon 3</p>
+            </div>
+            <div class="card" data-room="private">
+                <h2>Message privé</h2>
+                <p id="private-message-count">Nombre de messages : 0</p>
+            </div>
+        </div>
+        <div class="containe-message">
+            <h1 id="userconnected"></h1>
+            <div>
+                <div>
+                    <div class="section">
+                        <p class="section-title">Salon</p>
+                        <textarea name="" id="room" readonly>room1</textarea>
+                    </div>
+
+                    <div class="section">
+                        <div class="card">
+                            <p class="section-title">Messages du salon</p>
+                            <ul id="list-message"></ul>
+                            <p class="data"></p>
+                        </div>
+                    </div>
+
+
+                    <!-- Section "Message" -->
+                    <div class="section">
+                        <p class="section-title">Envoyer un message au forum ou selectionner un utilisateur</p>
+                        <textarea name="" id="message"></textarea>
+                    </div>
+                    <!-- Section "Destinataire" -->
+                    <div class="section">
+                        <p class="section-title">Destinataire</p>
+                        <select id="recipient">
+                            <option value="">Sélectionner un destinataire</option>
+                        </select>
+                    </div>
+                    <div class="section">
+                        <button onclick="send()">Send</button>
+                        <button onclick="sendPrivateMessage(recipient.value)">Envoyer un message privé</button>
+                    </div>
+                </div>
+                <div class="section">
+                    <p class="section-title">Liste des messages privés</p>
+                    <ul id="private-message-list"></ul>
+                </div>
+            </div>
+
+
+            <!-- Conteneur du jeu Puissance 4 -->
+            <div class="container">
+                <h1>Puissance 4</h1>
+                <div>
+                    <h3>Consignes</h3>
+                    <p>Pour commencer une partie, il faut cliquer sur "jouer", le jeu commence lorsque vous serez deux.
+                    </p>
+                    <p>Pour faire une nouvelle partie, cliquer sur "nouvelle partie" puis "jouer".</p>
+                    <p>Le premier joueur qui commence est celui qui à le "joueur 1".</p>
+                    <p>Si un des joueurs recharge la page, la partie recommence de zéro et les deux joueurs devront
+                        cliqué sur "jouer".</p>
+                    <p>Le joueur qui a 4 couleurs alignées en diagonale ou horizontal remporte la partie.</p>
+                </div>
+                <div id="board"></div>
+                <div id="status"></div>
+                <button id="joinButton">Jouer</button>
+                <button id="resetButton">Nouvelle partie</button>
+                <button id="disconnectButton">Quitter la partie</button>
+            </div>
+
+            <p id="playerName"></p>
+            <div id="game-container">
+                <div id="game"></div>
+                <div id="playersList">
+                    <p>Joueurs présents dans la partie :</p>
+                    <ul id="presentPlayers"></ul>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Script pour la gestion des connexions via Socket.IO -->
+        <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"
+            integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO"
+            crossorigin="anonymous"></script>
+
+        <!-- Script principal -->
+        <script src="./script.js"></script>
+
+        <!-- Script pour l'en-tête -->
+        <script src="./header.js"></script>
+    </body>
+
+</html>
