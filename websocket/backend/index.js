@@ -182,17 +182,29 @@ io.on("connection", (socket) => {
     const messageHistory = roomMessages[room] || [];
     socket.emit("messageHistory", messageHistory);
   });
+<<<<<<< HEAD
 
+=======
+  
+>>>>>>> b6f06b26c861adca421ba9c611cbaaef60183be3
   socket.on("join", () => {
     if (Object.keys(players).length < 2) {
       if (!currentPlayerId) {
         currentPlayerId = socket.id;
       }
+<<<<<<< HEAD
 
       players[socket.id] = currentPlayerSymbol;
       currentPlayerSymbol = currentPlayerSymbol === "R" ? "Y" : "R";
       if (Object.keys(players).length === 2) {
         io.emit("init", { symbol: players[socket.id] });
+=======
+      
+      players[socket.id] = currentPlayerSymbol;
+      currentPlayerSymbol = currentPlayerSymbol === "R" ? "Y" : "R";
+      if (Object.keys(players).length === 2) {
+        io.emit("init", { symbol: players[socket.id] }); 
+>>>>>>> b6f06b26c861adca421ba9c611cbaaef60183be3
       }
     } else {
       socket.emit("full");
@@ -204,7 +216,10 @@ io.on("connection", (socket) => {
     if (socket.id !== currentPlayerId) {
       return;
     }
+<<<<<<< HEAD
 
+=======
+>>>>>>> b6f06b26c861adca421ba9c611cbaaef60183be3
     if (Object.keys(players).length <= 2) {
       if (Object.keys(players).length === 1) {
         players[socket.id].symbol = "R";
@@ -228,7 +243,10 @@ io.on("connection", (socket) => {
         resetGame();
       }
     });
+<<<<<<< HEAD
 
+=======
+>>>>>>> b6f06b26c861adca421ba9c611cbaaef60183be3
     if (
       row >= 0 &&
       row < 6 &&
@@ -253,7 +271,11 @@ io.on("connection", (socket) => {
   });
 
   socket.on("reset", () => {
+<<<<<<< HEAD
     currentPlayerId = null;
+=======
+    currentPlayerId = null; 
+>>>>>>> b6f06b26c861adca421ba9c611cbaaef60183be3
     resetGame();
     io.emit("reset");
     io.emit("init", { symbol: currentPlayerSymbol });
@@ -263,7 +285,11 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     delete players[socket.id];
     if (socket.id === currentPlayerId) {
+<<<<<<< HEAD
       currentPlayerId = Object.keys(players)[0] || null;
+=======
+      currentPlayerId = Object.keys(players)[0] || null; 
+>>>>>>> b6f06b26c861adca421ba9c611cbaaef60183be3
     }
   });
 });
