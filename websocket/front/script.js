@@ -15,7 +15,8 @@ const cells = [];
 const joinButton = document.getElementById("joinButton");
 const resetButton = document.getElementById("resetButton");
 
-const socket = io("http://localhost:3000");
+//const socket = io("http://localhost:3000");
+const socket = io("https://websocket-egie.onrender.com");
 changeRoom("room1");
 socket.on("connect", () => {
   const userconnected = document.getElementById("userconnected");
