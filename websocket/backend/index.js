@@ -20,6 +20,8 @@ const roomMessages = {};
 let currentPlayerSymbol = "R";
 const players = {};
 let currentPlayerId = null;
+let gameStarted = false;
+
 let board = Array(6)
   .fill(null)
   .map(() => Array(7).fill(null));
@@ -147,6 +149,29 @@ io.on("connection", (socket) => {
     return users;
   }
 
+  if (!gameStarted) {
+    socket.on("join-game", () => {
+        console.log("join-game", Object.keys(players));
+      if (Object.keys(players).length < 2) {
+        console.log("join-game", Object.keys(players) < 2);
+        if (!currentPlayerId) {
+          currentPlayerId = socket.id;
+        }
+        console.log("test");
+        players[socket.id] = currentPlayerSymbol;
+        currentPlayerSymbol = currentPlayerSymbol === "R" ? "Y" : "R";
+        if (Object.keys(players).length === 2) {
+          io.emit("init", { symbol: players[socket.id] });
+          gameStarted = true; 
+        }
+      } else {
+        socket.emit("full");
+      }
+    });
+  } else {
+    socket.emit("game-already-started");
+  }
+
   socket.on("join", (room) => {
     if (socket.room) {
       socket.leave(socket.room);
@@ -182,33 +207,25 @@ io.on("connection", (socket) => {
     const messageHistory = roomMessages[room] || [];
     socket.emit("messageHistory", messageHistory);
   });
-<<<<<<< HEAD
 
-=======
-  
->>>>>>> b6f06b26c861adca421ba9c611cbaaef60183be3
   socket.on("join", () => {
-    if (Object.keys(players).length < 2) {
-      if (!currentPlayerId) {
-        currentPlayerId = socket.id;
-      }
-<<<<<<< HEAD
 
-      players[socket.id] = currentPlayerSymbol;
-      currentPlayerSymbol = currentPlayerSymbol === "R" ? "Y" : "R";
-      if (Object.keys(players).length === 2) {
-        io.emit("init", { symbol: players[socket.id] });
-=======
-      
-      players[socket.id] = currentPlayerSymbol;
-      currentPlayerSymbol = currentPlayerSymbol === "R" ? "Y" : "R";
-      if (Object.keys(players).length === 2) {
-        io.emit("init", { symbol: players[socket.id] }); 
->>>>>>> b6f06b26c861adca421ba9c611cbaaef60183be3
+    socket.on("join-game", () => {
+      if (Object.keys(players).length !== 2) {
+        if (!currentPlayerId) {
+          currentPlayerId = socket.id;
+        }
+
+        players[socket.id] = currentPlayerSymbol;
+        currentPlayerSymbol = currentPlayerSymbol[0] === "R" ? "Y" : "R";
+        if (Object.keys(players).length === 2) {
+          io.emit("init", { symbol: players[socket.id] });
+          gameStarted = true;
+        }
+      } else {
+        socket.emit("full");
       }
-    } else {
-      socket.emit("full");
-    }
+    });
   });
 
   socket.on("play", (data) => {
@@ -216,11 +233,10 @@ io.on("connection", (socket) => {
     if (socket.id !== currentPlayerId) {
       return;
     }
-<<<<<<< HEAD
 
-=======
->>>>>>> b6f06b26c861adca421ba9c611cbaaef60183be3
     if (Object.keys(players).length <= 2) {
+        console.log("players", Object.keys(players).length);
+        console.log("players", players);
       if (Object.keys(players).length === 1) {
         players[socket.id].symbol = "R";
       } else {
@@ -243,10 +259,13 @@ io.on("connection", (socket) => {
         resetGame();
       }
     });
-<<<<<<< HEAD
+  
+    socket.on("player-left", (data) => {
+      const { roomId, playerId } = data;
+      socket.to(roomId).emit("player-disconnected", { playerId });
 
-=======
->>>>>>> b6f06b26c861adca421ba9c611cbaaef60183be3
+    });
+
     if (
       row >= 0 &&
       row < 6 &&
@@ -265,33 +284,24 @@ io.on("connection", (socket) => {
     }
   });
   socket.on("leave-game", () => {
+    console.log("leave-game", Object.keys(players));
     delete players[socket.id];
     resetGame();
     io.emit("player-disconnected", { playerId: socket.id });
   });
 
   socket.on("reset", () => {
-<<<<<<< HEAD
-    currentPlayerId = null;
-=======
-    currentPlayerId = null; 
->>>>>>> b6f06b26c861adca421ba9c611cbaaef60183be3
     resetGame();
     io.emit("reset");
     io.emit("init", { symbol: currentPlayerSymbol });
     io.emit("gameReset");
   });
 
-  socket.on("disconnect", () => {
-    delete players[socket.id];
-    if (socket.id === currentPlayerId) {
-<<<<<<< HEAD
-      currentPlayerId = Object.keys(players)[0] || null;
-=======
-      currentPlayerId = Object.keys(players)[0] || null; 
->>>>>>> b6f06b26c861adca421ba9c611cbaaef60183be3
-    }
-  });
+
+ socket.on("disconnect", () => {
+        io.emit("player-left"); 
+        gameStarted = false; 
+    });
 });
 
 server.listen(PORT, () => {

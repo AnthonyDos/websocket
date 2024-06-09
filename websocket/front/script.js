@@ -15,8 +15,8 @@ const cells = [];
 const joinButton = document.getElementById("joinButton");
 const resetButton = document.getElementById("resetButton");
 
-//const socket = io("http://localhost:3000");
-const socket = io("https://websocket-egie.onrender.com");
+const socket = io("http://localhost:3000");
+//const socket = io("https://websocket-egie.onrender.com");
 changeRoom("room1");
 socket.on("connect", () => {
   const userconnected = document.getElementById("userconnected");
@@ -232,23 +232,43 @@ function initializeGame() {
 }
 
 initializeGame();
-
-socket.on("init", (data) => {
-  if (!currentPlayerSymbol) {
-    currentPlayerSymbol = data.symbol;
+function updatePlayerStatus() {
     const playerName = document.getElementById("playerName");
     const player = currentPlayerSymbol === "R" ? "Joueur 1" : "Joueur 2";
-    playerName.textContent = `Vous êtes le ${player}.`;
-    if (!gameInitialized) {
-      alert(`Vous êtes le ${player}`);
+    playerName.textContent = `Vous êtes ${player}.`;
+    alert(`Vous êtes ${player}.`);
+}
+socket.on("init", (data) => {
+    // if (!currentPlayerSymbol) {
+    //     currentPlayerSymbol = data.symbol;
+    //     const playerName = document.getElementById("playerName");
+    //     const player = currentPlayerSymbol === "R" ? "Joueur 1" : "Joueur 2";
+    //     playerName.textContent = `Vous êtes le ${player}.`;
+    //     if (!gameInitialized) {
+    //         alert(`Vous êtes le ${player}`);
+    //     }
+    // } else {
+    //     console.log(
+    //         `Vous êtes déjà ${socket.id === currentPlayerId ? "le" : "un autre"} ${
+    //             currentPlayerSymbol === "R" ? "Joueur 1" : "Joueur 2"
+    //         }`
+    //     );
+    // }
+    console.log("init", data);
+    if (!currentPlayerSymbol) {
+        currentPlayerSymbol = data.symbol;
+        console.log("currentPlayerSymbol", currentPlayerSymbol);
+        updatePlayerStatus();
+        if (!gameInitialized) {
+            alert(`Vous êtes ${currentPlayerSymbol === "R" ? "Joueur 1" : "Joueur 2"}`);
+        }
+    } else {
+        console.log(
+            `Vous êtes déjà ${socket.id === currentPlayerId ? "le" : "un autre"} ${
+                currentPlayerSymbol === "R" ? "Joueur 1" : "Joueur 2"
+            }`
+        );
     }
-  } else {
-    console.log(
-      `Vous êtes déjà le ${
-        currentPlayerSymbol === "R" ? "Joueur 1" : "Joueur 2"
-      }`
-    );
-  }
 });
 
 socket.on("full", () => {
@@ -258,9 +278,6 @@ socket.on("full", () => {
   }
 });
 
-socket.on("init", (data) => {
-  console.log("Received init event:", data);
-});
 
 socket.on("play", (data) => {
   const { row, column, symbol } = data;
@@ -269,7 +286,6 @@ socket.on("play", (data) => {
 });
 window.addEventListener("beforeunload", () => {
   socket.emit("playerReload", socket.id);
-  socket.emit("reset");
 });
 
 const disconnectButton = document.getElementById("disconnectButton");
@@ -296,24 +312,40 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  socket.on("player-disconnected", (data) => {
-    const playerId = data.playerId;
-    const playerElement = document.getElementById(`player-${playerId}`);
-    if (playerElement) {
-      playerElement.remove();
-    }
-    const playersList = document.getElementById("presentPlayers");
-    if (playersList) {
-      const message = document.createElement("li");
-      message.textContent = `Le joueur avec l'ID ${playerId} a quitté la partie`;
-      playersList.appendChild(message);
-      cells.forEach((cell) => {
-        cell.classList.remove("R", "Y");
-      });
-    }
-    joinButton.disabled = false;
-  });
+window.addEventListener("beforeunload", () => {
+  socket.emit("player-left", { roomId: currentRoom, playerId: socket.id });
 });
+const playersList = document.getElementById("presentPlayers");
+socket.on("player-left", () => {
+    alert("Un joueur a quitté la partie. La partie est terminée.");
+    const message = document.createElement("li");
+    message.textContent = `"Un joueur a quitté la partie. La partie est terminée.`;
+    playersList.appendChild(message);
+
+   
+});
+
+socket.on("player-disconnected", (data) => {
+  const playerId = data.playerId;
+  const playerElement = document.getElementById(`player-${playerId}`);
+  if (playerElement) {
+    playerElement.remove();
+  }
+
+  
+  if (playersList) {
+    const message = document.createElement("li");
+    message.textContent = `Le joueur avec l'ID ${playerId} a quitté la partie`;
+    playersList.appendChild(message);
+
+    cells.forEach((cell) => {
+      cell.classList.remove("R", "Y");
+    });
+  }
+  joinButton.disabled = false; 
+});
+});
+
 
 socket.on("win", (data) => {
   alert(`Le joueur ${data.symbol} a gagné !`);
