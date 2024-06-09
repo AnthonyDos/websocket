@@ -15,8 +15,7 @@ const cells = [];
 const joinButton = document.getElementById("joinButton");
 const resetButton = document.getElementById("resetButton");
 
-const socket = io("http://localhost:3000");
-//const socket = io("https://websocket-egie.onrender.com");
+const socket = io("https://websocket-egie.onrender.com");
 changeRoom("room1");
 socket.on("connect", () => {
   const userconnected = document.getElementById("userconnected");
@@ -64,6 +63,7 @@ function addMessage(room, message, userId) {
   updateMessageList();
 }
 
+
 function send() {
   if (currentRoom) {
     const message = messageArea.value.trim();
@@ -73,6 +73,7 @@ function send() {
     console.log("Veuillez d'abord rejoindre une salle");
   }
 }
+
 
 roomArea.addEventListener("change", (e) => {
   changeRoom(e.target.value);
@@ -239,22 +240,6 @@ function updatePlayerStatus() {
     alert(`Vous êtes ${player}.`);
 }
 socket.on("init", (data) => {
-    // if (!currentPlayerSymbol) {
-    //     currentPlayerSymbol = data.symbol;
-    //     const playerName = document.getElementById("playerName");
-    //     const player = currentPlayerSymbol === "R" ? "Joueur 1" : "Joueur 2";
-    //     playerName.textContent = `Vous êtes le ${player}.`;
-    //     if (!gameInitialized) {
-    //         alert(`Vous êtes le ${player}`);
-    //     }
-    // } else {
-    //     console.log(
-    //         `Vous êtes déjà ${socket.id === currentPlayerId ? "le" : "un autre"} ${
-    //             currentPlayerSymbol === "R" ? "Joueur 1" : "Joueur 2"
-    //         }`
-    //     );
-    // }
-    console.log("init", data);
     if (!currentPlayerSymbol) {
         currentPlayerSymbol = data.symbol;
         console.log("currentPlayerSymbol", currentPlayerSymbol);
